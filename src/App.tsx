@@ -1,8 +1,9 @@
+import { RouterProvider } from "react-router-dom";
+import router from "./routes/router";
+
 function App() {
   return (
-    <>
-      <h1>Cuboid Map</h1>
-    </>
+    <RouterProvider router={router} fallbackElement={<p>Initial Load...</p>} />
   );
 }
 
