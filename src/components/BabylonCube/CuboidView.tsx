@@ -17,12 +17,6 @@ const CuboidView: React.FC<CuboidViewProps> = ({ imageUrl }) => {
       material.diffuseTexture = new Texture(imageUrl, scene);
       box.material = material;
     }
-
-    return () => {
-      if (boxRef.current) {
-        boxRef.current.dispose(); // Clean up Babylon.js resources
-      }
-    };
   }, [imageUrl]);
 
   return (

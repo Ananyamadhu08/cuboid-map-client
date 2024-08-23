@@ -140,7 +140,7 @@ export const fetchUserMapCaptures = createAsyncThunk<
 
   try {
     const response = await axios.get<ApiResponse<MapCapture[]>>(
-      "http://localhost:8080/map-captures",
+      "http://localhost:8080/map-captures", // TODO: use env
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -275,8 +275,7 @@ const mapSlice = createSlice({
         fetchTopCapturedRegions.fulfilled,
         (state, action: PayloadAction<MapCapture[]>) => {
           state.status = "succeeded";
-          state.captures = action.payload; // Optionally replace captures with top regions
-          toast.success("Top captured regions loaded successfully!");
+          state.captures = action.payload;
         },
       )
       .addCase(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { fetchUserMapCaptures } from "../slices/mapSlice";
@@ -10,14 +10,6 @@ const SavedMapCaptures: React.FC = () => {
     (state: RootState) => state.map,
   );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCapture, setSelectedCapture] = useState(null);
-
-  const openModal = (capture) => {
-    setSelectedCapture(capture);
-    setIsModalOpen(true);
-  };
-
   useEffect(() => {
     dispatch(fetchUserMapCaptures());
   }, [dispatch]);
@@ -27,47 +19,39 @@ const SavedMapCaptures: React.FC = () => {
 
   return (
     <Layout>
-      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 lg:grid-cols-3">
         {captures.map((capture) => (
-          <Card key={capture.id} onClick={() => openModal(capture)}>
+          <div
+            key={capture.id}
+            className="transform overflow-hidden rounded-lg bg-white shadow-lg transition-transform hover:scale-105 dark:bg-gray-800"
+          >
             <img
               src={capture.imageUrl}
               alt={capture.title}
-              className="h-32 w-full rounded-t-lg object-cover"
+              className="h-48 w-full object-cover transition-opacity duration-300 hover:opacity-90"
             />
             <div className="p-4">
-              <h3 className="text-lg font-semibold dark:text-white">
+              <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">
                 {capture.title}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {capture.date}
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Longitude: {capture.longitude?.toFixed(4)}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Latitude: {capture.latitude?.toFixed(4)}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Zoom: {capture.zoom?.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Bearing: {capture.bearing?.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Pitch: {capture.pitch?.toFixed(2)}
               </p>
             </div>
-          </Card>
+          </div>
         ))}
-
-        {isModalOpen && selectedCapture && (
-          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-            <ModalTitle>{selectedCapture.title}</ModalTitle>
-            <ModalContent>
-              <img
-                src={selectedCapture.imageUrl}
-                alt={selectedCapture.title}
-                className="h-auto w-full rounded-lg"
-              />
-              <p className="mt-4 text-gray-700 dark:text-gray-200">
-                Captured on: {selectedCapture.date}
-              </p>
-              {/* Add more details or actions here */}
-            </ModalContent>
-            <ModalFooter>
-              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-                Close
-              </Button>
-              {/* Add edit or delete buttons here */}
-            </ModalFooter>
-          </Modal>
-        )}
       </div>
     </Layout>
   );

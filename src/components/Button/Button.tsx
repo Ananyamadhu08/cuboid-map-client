@@ -11,13 +11,17 @@ interface ButtonProps {
   imgAlt?: string;
 }
 
-const Avatar: React.FC<{ imgSrc?: string; imgAlt: string }> = ({
+interface AvatarProps {
+  imgSrc?: string;
+  imgAlt: string;
+  defaultAvatar?: string;
+}
+
+const Avatar: React.FC<AvatarProps> = ({
   imgSrc,
   imgAlt,
+  defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png",
 }) => {
-  const defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png";
-
-  // TODO: check why icon is not rendering
   return (
     <img
       src={imgSrc || defaultAvatar}

@@ -1,8 +1,8 @@
 import React from "react";
-import Dropdown, { DropdownItem } from "../Dropdown";
+import { useSelector } from "react-redux";
 import Button from "../Button/Button";
 import { useAuth } from "../../hooks/useAuth";
-import { useSelector } from "react-redux";
+import { Dropdown, DropdownItem } from "../Dropdown";
 import { selectCurrentUser } from "../../slices/authSlice";
 
 const UserMenu: React.FC = () => {
