@@ -4,10 +4,9 @@ import {
   PayloadAction,
   createSelector,
 } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { RootState } from "../app/store";
 import toast from "react-hot-toast";
-import api from "../utils/api";
 
 const BE_ENDPOINT = import.meta.env.VITE_BE_ENDPOINT;
 
@@ -62,7 +61,7 @@ export const login = createAsyncThunk<
   { rejectValue: AuthError }
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
-    const response = await api.post<ApiResponse<AuthResponse>>(
+    const response = await axios.post<ApiResponse<AuthResponse>>(
       `${BE_ENDPOINT}/auth/login`,
       credentials,
     );
@@ -84,7 +83,7 @@ export const register = createAsyncThunk<
   { rejectValue: AuthError }
 >("auth/register", async (userInfo, { rejectWithValue }) => {
   try {
-    const response = await api.post<ApiResponse<AuthResponse>>(
+    const response = await axios.post<ApiResponse<AuthResponse>>(
       `${BE_ENDPOINT}/auth/register`,
       userInfo,
     );
@@ -115,7 +114,7 @@ export const refreshAccessToken = createAsyncThunk<
   }
 
   try {
-    const response = await api.post<ApiResponse<{ accessToken: string }>>(
+    const response = await axios.post<ApiResponse<{ accessToken: string }>>(
       `${BE_ENDPOINT}/auth/refresh-token`,
       { refreshToken },
     );
