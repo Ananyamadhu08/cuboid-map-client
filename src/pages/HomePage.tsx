@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Card from "../components/Card";
 import Tabs from "../components/Tabs";
 import Layout from "../layout/Layout";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
   const tabData = [
     {
       label: "Map Vew",
