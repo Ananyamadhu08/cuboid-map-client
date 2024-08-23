@@ -4,7 +4,6 @@ import { AppDispatch, RootState } from "../app/store";
 import { fetchTopCapturedRegions } from "../slices/mapSlice";
 import Layout from "../layout/Layout";
 import { Loader } from "../components/Loader";
-// import { Loader } from "../components/Loader";
 
 const TopCapturedRegions: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

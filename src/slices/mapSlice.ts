@@ -4,6 +4,7 @@ import { RootState } from "../app/store";
 import { toast } from "react-hot-toast";
 import api from "../utils/api";
 
+// Define the MapCapture interface
 interface MapCapture {
   id: string;
   userId: string;
@@ -17,13 +18,29 @@ interface MapCapture {
   createdAt: string;
 }
 
+// Define the state interface for the slice
 interface MapState {
   captures: MapCapture[];
   latestCapture: MapCapture | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  currentPage: number;
+  totalCaptures: number;
+  hasMore: boolean;
 }
 
+// Initial state with pagination data
+const initialState: MapState = {
+  captures: [],
+  latestCapture: null,
+  status: "idle",
+  error: null,
+  currentPage: 1,
+  totalCaptures: 0,
+  hasMore: true,
+};
+
+// Interfaces for API responses and errors
 interface SaveMapCaptureArgs {
   title: string;
   longitude: number;
@@ -45,12 +62,49 @@ interface MapError {
   message: string;
 }
 
-const initialState: MapState = {
-  captures: [],
-  latestCapture: null,
-  status: "idle",
-  error: null,
-};
+interface FetchUserMapCapturesArgs {
+  page: number;
+  limit: number;
+}
+
+// Thunk to fetch all map captures of the user with pagination
+export const fetchUserMapCaptures = createAsyncThunk<
+  MapCapture[],
+  FetchUserMapCapturesArgs,
+  { rejectValue: MapError; state: RootState }
+>(
+  "map/fetchUserMapCaptures",
+  async ({ page, limit }, { rejectWithValue, getState }) => {
+    const state = getState();
+    const accessToken = state.auth.accessToken;
+
+    if (!accessToken) {
+      return rejectWithValue({ message: "No access token available" });
+    }
+
+    try {
+      const response = await api.get<ApiResponse<MapCapture[]>>(
+        `http://localhost:8080/map-captures?page=${page}&limit=${limit}`, // TODO: use env
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (response.data.success) {
+        return response.data.responseObject!;
+      } else {
+        return rejectWithValue({ message: response.data.message });
+      }
+    } catch (error) {
+      const err = error as AxiosError<MapError>;
+      return rejectWithValue(
+        err.response?.data || { message: "Failed to fetch map captures" },
+      );
+    }
+  },
+);
 
 // Thunk to save a map capture
 export const saveMapCapture = createAsyncThunk<
@@ -126,42 +180,6 @@ export const fetchLatestMapCapture = createAsyncThunk<
   }
 });
 
-// Thunk to fetch all map captures of the user
-export const fetchUserMapCaptures = createAsyncThunk<
-  MapCapture[],
-  void,
-  { rejectValue: MapError; state: RootState }
->("map/fetchUserMapCaptures", async (_, { rejectWithValue, getState }) => {
-  const state = getState();
-  const accessToken = state.auth.accessToken;
-
-  if (!accessToken) {
-    return rejectWithValue({ message: "No access token available" });
-  }
-
-  try {
-    const response = await api.get<ApiResponse<MapCapture[]>>(
-      "http://localhost:8080/map-captures", // TODO: use env
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-
-    if (response.data.success) {
-      return response.data.responseObject!;
-    } else {
-      return rejectWithValue({ message: response.data.message });
-    }
-  } catch (error) {
-    const err = error as AxiosError<MapError>;
-    return rejectWithValue(
-      err.response?.data || { message: "Failed to fetch map captures" },
-    );
-  }
-});
-
 // Thunk to fetch top captured regions
 export const fetchTopCapturedRegions = createAsyncThunk<
   MapCapture[],
@@ -187,9 +205,8 @@ export const fetchTopCapturedRegions = createAsyncThunk<
 
     if (response.data.success) {
       return response.data.responseObject!;
-    } else {
-      return rejectWithValue({ message: response.data.message });
     }
+    return rejectWithValue({ message: response.data.message });
   } catch (error) {
     const err = error as AxiosError<MapError>;
     return rejectWithValue(
@@ -201,7 +218,15 @@ export const fetchTopCapturedRegions = createAsyncThunk<
 const mapSlice = createSlice({
   name: "map",
   initialState,
-  reducers: {},
+  reducers: {
+    resetMapState: (state) => {
+      state.captures = [];
+      state.status = "idle";
+      state.currentPage = 1;
+      state.totalCaptures = 0;
+      state.hasMore = true;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Save Map Capture
@@ -247,27 +272,6 @@ const mapSlice = createSlice({
         },
       )
 
-      // Fetch All User Map Captures
-      .addCase(fetchUserMapCaptures.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(
-        fetchUserMapCaptures.fulfilled,
-        (state, action: PayloadAction<MapCapture[]>) => {
-          state.status = "succeeded";
-          state.captures = action.payload; // Replace the current captures with the fetched captures
-        },
-      )
-      .addCase(
-        fetchUserMapCaptures.rejected,
-        (state, action: PayloadAction<MapError | undefined>) => {
-          state.status = "failed";
-          state.error =
-            action.payload?.message || "Failed to fetch map captures";
-          toast.error(state.error);
-        },
-      )
-
       // Fetch Top Captured Regions
       .addCase(fetchTopCapturedRegions.pending, (state) => {
         state.status = "loading";
@@ -287,8 +291,37 @@ const mapSlice = createSlice({
             action.payload?.message || "Failed to fetch top captured regions";
           toast.error(state.error);
         },
+      )
+
+      // Fetch All User Map Captures
+      .addCase(fetchUserMapCaptures.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(
+        fetchUserMapCaptures.fulfilled,
+        (state, action: PayloadAction<MapCapture[]>) => {
+          state.status = "succeeded";
+          state.captures = [...state.captures, ...action.payload]; // Append new captures to the existing ones
+          state.currentPage += 1; // Increment the current page
+          state.totalCaptures += action.payload.length;
+
+          // Assuming a fixed page size for simplicity, adjust this as needed
+          if (action.payload.length < 10) {
+            state.hasMore = false; // No more captures to load
+          }
+        },
+      )
+      .addCase(
+        fetchUserMapCaptures.rejected,
+        (state, action: PayloadAction<MapError | undefined>) => {
+          state.status = "failed";
+          state.error =
+            action.payload?.message || "Failed to fetch map captures";
+          toast.error(state.error);
+        },
       );
   },
 });
 
+export const { resetMapState } = mapSlice.actions;
 export default mapSlice.reducer;
