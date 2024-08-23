@@ -18,7 +18,7 @@ const UserMenu: React.FC = () => {
       trigger={
         <Button
           variant="avatar"
-          className="mx-3 flex rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 md:mr-0"
+          className="mx-3 flex rounded-full md:mr-0"
           imgAlt="user photo"
         >
           <span className="sr-only">Open user menu</span>
@@ -32,10 +32,6 @@ const UserMenu: React.FC = () => {
         <span className="block truncate text-sm text-gray-900 dark:text-white">
           {user?.email}
         </span>
-      </div>
-      <div className="py-1 text-gray-700 dark:text-gray-300">
-        <DropdownItem close={() => {}}>My profile</DropdownItem>
-        <DropdownItem close={() => {}}>Account settings</DropdownItem>
       </div>
       <div
         onClick={handleLogout}
