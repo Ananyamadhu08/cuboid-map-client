@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-const DarkModeToggle: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+const useDarkMode = (): { darkMode: boolean; toggleDarkMode: () => void } => {
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem("dark-mode");
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
 
   useEffect(() => {
     if (darkMode) {
@@ -13,12 +12,22 @@ const DarkModeToggle: React.FC = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
+    localStorage.setItem("dark-mode", JSON.stringify(darkMode));
   }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode(!darkMode);
+
+  return { darkMode, toggleDarkMode };
+};
+
+const DarkModeToggle: React.FC = () => {
+  const { darkMode, toggleDarkMode } = useDarkMode();
 
   return (
     <button
       onClick={toggleDarkMode}
       className="rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+      aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
       {darkMode ? (
         <svg

@@ -7,9 +7,29 @@ interface ButtonProps {
   type?: "button" | "submit" | "reset";
   className?: string;
   disabled?: boolean;
-  imgSrc?: string; // Prop for avatar image source
-  imgAlt?: string; // Alt text for the avatar image
+  imgSrc?: string;
+  imgAlt?: string;
 }
+
+interface AvatarProps {
+  imgSrc?: string;
+  imgAlt: string;
+  defaultAvatar?: string;
+}
+
+const Avatar: React.FC<AvatarProps> = ({
+  imgSrc,
+  imgAlt,
+  defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png",
+}) => {
+  return (
+    <img
+      src={imgSrc || defaultAvatar}
+      alt={imgAlt}
+      className="max-h-10 min-w-10 overflow-hidden rounded-full"
+    />
+  );
+};
 
 const Button: React.FC<ButtonProps> = ({
   variant = "primary",
@@ -19,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({
   className = "",
   disabled = false,
   imgSrc,
-  imgAlt = "avatar", // Default alt text
+  imgAlt = "avatar",
 }) => {
   const baseClasses =
     "px-4 py-2 rounded-lg focus:outline-none transition-colors duration-200";
@@ -28,27 +48,21 @@ const Button: React.FC<ButtonProps> = ({
     primary: "bg-blue-500 text-white hover:bg-blue-600",
     secondary: "bg-gray-500 text-white hover:bg-gray-600",
     danger: "bg-red-500 text-white hover:bg-red-600",
-    avatar: "w-8 h-8 p-0 bg-transparent", // Custom styles for avatar
+    avatar: "px-0 py-0 w-10 h-10 p-0 bg-transparent rounded-full",
   };
 
   const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
-
-  const defaultAvatar = "https://www.w3schools.com/howto/img_avatar.png";
 
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`${baseClasses} ${variantClasses[variant]} ${className} ${disabledClasses} `}
+      className={`${baseClasses} ${variantClasses[variant]} ${className} ${disabledClasses}`}
       disabled={disabled}
+      aria-label={variant === "avatar" ? imgAlt : undefined}
     >
-      {/* TODO: check why the avatar doesnt work */}
       {variant === "avatar" ? (
-        <img
-          src={imgSrc || defaultAvatar}
-          alt={imgAlt}
-          className="h-full w-full rounded-full object-cover"
-        />
+        <Avatar imgSrc={imgSrc} imgAlt={imgAlt} />
       ) : (
         children
       )}
