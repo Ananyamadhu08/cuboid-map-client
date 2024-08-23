@@ -3,7 +3,7 @@ import Layout from "../layout/Layout";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../slices/authSlice";
-import MapView from "../components/MapView";
+import MapView from "../components/MapView/MapView";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();

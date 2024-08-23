@@ -1,9 +1,9 @@
 import React from "react";
-import Dropdown, { DropdownItem } from "./Dropdown";
-import Button from "./Button";
-import { useAuth } from "../hooks/useAuth";
+import Dropdown, { DropdownItem } from "../Dropdown";
+import Button from "../Button/Button";
+import { useAuth } from "../../hooks/useAuth";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../slices/authSlice";
+import { selectCurrentUser } from "../../slices/authSlice";
 
 const UserMenu: React.FC = () => {
   const { logoutUser } = useAuth();

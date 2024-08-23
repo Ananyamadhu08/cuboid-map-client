@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Map, { ViewState } from "react-map-gl";
-import CuboidView from "./CuboidView";
-import Button from "./Button";
-import { Modal, ModalContent, ModalFooter, ModalTitle } from "./Modal";
+import CuboidView from "../BabylonCube/CuboidView";
+import Button from "../Button/Button";
+import { Modal, ModalContent, ModalFooter, ModalTitle } from "../Modal";
 import toast from "react-hot-toast";
-import { saveMapCapture, fetchLatestMapCapture } from "../slices/mapSlice";
+import { saveMapCapture, fetchLatestMapCapture } from "../../slices/mapSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../app/store";
-import Input from "./Input";
+import { AppDispatch, RootState } from "../../app/store";
+import Input from "../Input/Input";
 
 const MapView: React.FC = () => {
   const [viewState, setViewState] = useState<ViewState>({
