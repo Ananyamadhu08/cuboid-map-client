@@ -41,11 +41,14 @@ interface ApiResponse<T> {
 
 const initialAccessToken = localStorage.getItem("accessToken");
 const initialRefreshToken = localStorage.getItem("refreshToken");
+const initialUser = localStorage.getItem("currentUser")
+  ? JSON.parse(localStorage.getItem("currentUser")!)
+  : null;
 
 const initialState: AuthState = {
   accessToken: initialAccessToken,
   refreshToken: initialRefreshToken,
-  user: null,
+  user: initialUser,
   status: "idle",
   error: null,
 };
@@ -156,6 +159,13 @@ const authSlice = createSlice({
             email: action.payload.email,
           };
           localStorage.setItem("accessToken", action.payload.accessToken);
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify({
+              username: action.payload.username,
+              email: action.payload.email,
+            }),
+          );
           localStorage.setItem("refreshToken", action.payload.refreshToken);
         },
       )
@@ -179,6 +189,13 @@ const authSlice = createSlice({
             username: action.payload.username,
             email: action.payload.email,
           };
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify({
+              username: action.payload.username,
+              email: action.payload.email,
+            }),
+          );
           localStorage.setItem("accessToken", action.payload.accessToken);
           localStorage.setItem("refreshToken", action.payload.refreshToken);
         },
@@ -212,6 +229,8 @@ export const selectIsAuthenticated = createSelector(
   (state: RootState) => state.auth.accessToken,
   (accessToken) => !!accessToken,
 );
+
+export const selectCurrentUser = (state: RootState) => state.auth.user;
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
