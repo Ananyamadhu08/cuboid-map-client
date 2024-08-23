@@ -48,7 +48,7 @@ const Button: React.FC<ButtonProps> = ({
     primary: "bg-blue-500 text-white hover:bg-blue-600",
     secondary: "bg-gray-500 text-white hover:bg-gray-600",
     danger: "bg-red-500 text-white hover:bg-red-600",
-    avatar: "px-0 py-0 w-10 h-10 p-0 bg-transparent rounded-full",
+    avatar: "!px-0 !py-0 w-10 h-10 !p-0 bg-transparent rounded-full",
   };
 
   const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
