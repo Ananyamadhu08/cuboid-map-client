@@ -12,21 +12,23 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   return createPortal(
     <div
-      className="no- fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={onClose}
     >
       <div
-        className="relative rounded-lg bg-white shadow dark:bg-gray-700"
+        className="relative w-full max-w-md p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute right-3 top-3 rounded-lg p-1 text-gray-400 hover:bg-gray-200"
-        >
-          <span className="sr-only">Close modal</span>
-          &times;
-        </button>
-        {children}
+        <div className="relative rounded-lg bg-white shadow dark:bg-gray-700">
+          <button
+            onClick={onClose}
+            className="absolute right-3 top-3 rounded-lg p-1 text-gray-400 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-600"
+          >
+            <span className="sr-only">Close modal</span>
+            &times;
+          </button>
+          {children}
+        </div>
       </div>
     </div>,
     document.body,
