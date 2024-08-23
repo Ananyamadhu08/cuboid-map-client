@@ -1,8 +1,10 @@
 import axios from "axios";
 import { refreshAccessToken, logout } from "../slices/authSlice";
 
+const BE_ENDPOINT = import.meta.env.VITE_BE_ENDPOINT;
+
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: BE_ENDPOINT,
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

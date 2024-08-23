@@ -9,6 +9,8 @@ import { RootState } from "../app/store";
 import toast from "react-hot-toast";
 import api from "../utils/api";
 
+const BE_ENDPOINT = import.meta.env.VITE_BE_ENDPOINT;
+
 interface User {
   username: string;
   email: string;
@@ -61,7 +63,7 @@ export const login = createAsyncThunk<
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
     const response = await api.post<ApiResponse<AuthResponse>>(
-      "http://localhost:8080/auth/login",
+      `${BE_ENDPOINT}/auth/login`,
       credentials,
     );
 
@@ -83,7 +85,7 @@ export const register = createAsyncThunk<
 >("auth/register", async (userInfo, { rejectWithValue }) => {
   try {
     const response = await api.post<ApiResponse<AuthResponse>>(
-      "http://localhost:8080/auth/register",
+      `${BE_ENDPOINT}/auth/register`,
       userInfo,
     );
 
@@ -114,7 +116,7 @@ export const refreshAccessToken = createAsyncThunk<
 
   try {
     const response = await api.post<ApiResponse<{ accessToken: string }>>(
-      "http://localhost:8080/auth/refresh-token",
+      `${BE_ENDPOINT}/auth/refresh-token`,
       { refreshToken },
     );
 

@@ -4,6 +4,8 @@ import { RootState } from "../app/store";
 import { toast } from "react-hot-toast";
 import api from "../utils/api";
 
+const BE_ENDPOINT = import.meta.env.VITE_BE_ENDPOINT;
+
 // Define the MapCapture interface
 interface MapCapture {
   id: string;
@@ -84,7 +86,7 @@ export const fetchUserMapCaptures = createAsyncThunk<
 
     try {
       const response = await api.get<ApiResponse<MapCapture[]>>(
-        `http://localhost:8080/map-captures?page=${page}&limit=${limit}`, // TODO: use env
+        `${BE_ENDPOINT}/map-captures?page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -121,7 +123,7 @@ export const saveMapCapture = createAsyncThunk<
 
   try {
     const response = await axios.post<ApiResponse<MapCapture>>(
-      "http://localhost:8080/map-captures",
+      `${BE_ENDPOINT}/map-captures`,
       mapData,
       {
         headers: {
@@ -159,7 +161,7 @@ export const fetchLatestMapCapture = createAsyncThunk<
 
   try {
     const response = await axios.get<ApiResponse<MapCapture>>(
-      "http://localhost:8080/map-captures/user/latest",
+      `${BE_ENDPOINT}/map-captures/user/latest`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -195,7 +197,7 @@ export const fetchTopCapturedRegions = createAsyncThunk<
 
   try {
     const response = await api.get<ApiResponse<MapCapture[]>>(
-      "http://localhost:8080/map-captures/top-regions",
+      `${BE_ENDPOINT}/map-captures/top-regions`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
