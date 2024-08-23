@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  createSelector,
+} from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { RootState } from "../app/store";
 import toast from "react-hot-toast";
@@ -34,9 +39,12 @@ interface ApiResponse<T> {
   statusCode: number;
 }
 
+const initialAccessToken = localStorage.getItem("accessToken");
+const initialRefreshToken = localStorage.getItem("refreshToken");
+
 const initialState: AuthState = {
-  accessToken: null,
-  refreshToken: null,
+  accessToken: initialAccessToken,
+  refreshToken: initialRefreshToken,
   user: null,
   status: "idle",
   error: null,
@@ -198,6 +206,12 @@ const authSlice = createSlice({
       );
   },
 });
+
+// Selector to check if user is authenticated
+export const selectIsAuthenticated = createSelector(
+  (state: RootState) => state.auth.accessToken,
+  (accessToken) => !!accessToken,
+);
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;

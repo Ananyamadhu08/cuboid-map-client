@@ -1,14 +1,9 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { z, ZodError } from "zod";
 
 import { RootState, AppDispatch } from "../app/store";
-import {
-  login,
-  logout,
-  refreshAccessToken,
-  register,
-} from "../slices/authSlice";
+import { login, logout, register } from "../slices/authSlice";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -27,15 +22,6 @@ export const useAuth = () => {
   const { accessToken, refreshToken, user, status, error } = useSelector(
     (state: RootState) => state.auth,
   );
-
-  useEffect(() => {
-    const savedAccessToken = localStorage.getItem("accessToken");
-    const savedRefreshToken = localStorage.getItem("refreshToken");
-
-    if (savedAccessToken && savedRefreshToken) {
-      dispatch(refreshAccessToken());
-    }
-  }, [dispatch]);
 
   const loginUser = useCallback(
     async (credentials: {
@@ -75,16 +61,6 @@ export const useAuth = () => {
     dispatch(logout());
   }, [dispatch]);
 
-  const refreshAccessTokenHandler = useCallback(async () => {
-    try {
-      await dispatch(refreshAccessToken()).unwrap();
-    } catch (e) {
-      console.error("Failed to refresh access token", e);
-    }
-  }, [dispatch]);
-
-  const isAuthenticated = !!accessToken;
-
   return {
     accessToken,
     refreshToken,
@@ -94,7 +70,5 @@ export const useAuth = () => {
     loginUser,
     registerUser,
     logoutUser,
-    refreshAccessTokenHandler,
-    isAuthenticated,
   };
 };

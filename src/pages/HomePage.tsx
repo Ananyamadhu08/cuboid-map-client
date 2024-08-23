@@ -3,14 +3,16 @@ import Card from "../components/Card";
 import Tabs from "../components/Tabs";
 import Layout from "../layout/Layout";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../slices/authSlice";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);

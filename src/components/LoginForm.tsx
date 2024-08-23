@@ -3,20 +3,23 @@ import Input from "./Input";
 import Button from "./Button";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../slices/authSlice";
 
 const LoginForm: React.FC = () => {
-  const { loginUser, status, error, isAuthenticated } = useAuth();
+  const { loginUser, status, error } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
