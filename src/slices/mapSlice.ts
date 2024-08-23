@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { RootState } from "../app/store";
 import { toast } from "react-hot-toast";
+import api from "../utils/api";
 
 interface MapCapture {
   id: string;
@@ -139,7 +140,7 @@ export const fetchUserMapCaptures = createAsyncThunk<
   }
 
   try {
-    const response = await axios.get<ApiResponse<MapCapture[]>>(
+    const response = await api.get<ApiResponse<MapCapture[]>>(
       "http://localhost:8080/map-captures", // TODO: use env
       {
         headers: {
@@ -175,7 +176,7 @@ export const fetchTopCapturedRegions = createAsyncThunk<
   }
 
   try {
-    const response = await axios.get<ApiResponse<MapCapture[]>>(
+    const response = await api.get<ApiResponse<MapCapture[]>>(
       "http://localhost:8080/map-captures/top-regions",
       {
         headers: {
