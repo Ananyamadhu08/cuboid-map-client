@@ -1,8 +1,15 @@
 import React from "react";
 import Dropdown, { DropdownItem } from "./Dropdown";
 import Button from "./Button";
+import { useAuth } from "../hooks/useAuth";
 
 const UserMenu: React.FC = () => {
+  const { logoutUser } = useAuth();
+
+  const handleLogout = () => {
+    logoutUser();
+  };
+
   return (
     <Dropdown
       trigger={
@@ -23,13 +30,16 @@ const UserMenu: React.FC = () => {
           jane@gmail.com
         </span>
       </div>
-      <ul className="py-1 text-gray-700 dark:text-gray-300">
+      <div className="py-1 text-gray-700 dark:text-gray-300">
         <DropdownItem close={() => {}}>My profile</DropdownItem>
         <DropdownItem close={() => {}}>Account settings</DropdownItem>
-      </ul>
-      <ul className="py-1 text-gray-700 dark:text-gray-300">
+      </div>
+      <div
+        onClick={handleLogout}
+        className="py-1 text-gray-700 dark:text-gray-300"
+      >
         <DropdownItem close={() => {}}>Sign out</DropdownItem>
-      </ul>
+      </div>
     </Dropdown>
   );
 };
