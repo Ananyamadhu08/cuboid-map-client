@@ -1,18 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "./Input";
-import Button from "./Button"; // Reuse the button component
+import Button from "./Button";
+import { useAuth } from "../hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignupForm: React.FC = () => {
+  const { registerUser, status, error, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your sign-up logic here
-    console.log({ email, password, confirmPassword, acceptedTerms });
+
+    setFormError(null);
+
+    if (password !== confirmPassword) {
+      setFormError("Passwords do not match.");
+      return;
+    }
+
+    await registerUser({ username, email, password });
   };
 
   return (
@@ -40,6 +57,15 @@ const SignupForm: React.FC = () => {
                 required
               />
               <Input
+                id="username"
+                type="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username"
+                label="Your username"
+                required
+              />
+              <Input
                 id="password"
                 type="password"
                 value={password}
@@ -59,16 +85,20 @@ const SignupForm: React.FC = () => {
               />
 
               <Button type="submit" className="w-full">
-                Create an account
+                {status === "loading"
+                  ? "Creating account..."
+                  : "Create an account"}
               </Button>
+              {formError && <p className="text-red-500">{formError}</p>}
+              {error && <p className="text-red-500">{error}</p>}
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
-                <a
-                  href="#"
+                <Link
+                  to="/login"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                 >
                   Login here
-                </a>
+                </Link>
               </p>
             </form>
           </div>

@@ -1,17 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "./Input";
-import Button from "./Button"; // Reuse the button component
+import Button from "./Button";
+import { useAuth } from "../hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginForm: React.FC = () => {
+  const { loginUser, status, error, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [rememberMe, setRememberMe] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your login logic here
-    console.log({ email, password, rememberMe });
+
+    setFormError(null);
+
+    const result = await loginUser({ username, email, password });
+    if (result) {
+      setFormError(result);
+    }
   };
 
   return (
@@ -29,6 +44,15 @@ const LoginForm: React.FC = () => {
               Sign in to your account
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username"
+                label="Your username"
+                required
+              />
               <Input
                 id="email"
                 type="email"
@@ -49,16 +73,18 @@ const LoginForm: React.FC = () => {
               />
 
               <Button type="submit" className="w-full">
-                Sign in
+                {status === "loading" ? "Signing in..." : "Sign in"}
               </Button>
+              {formError && <p className="text-red-500">{formError}</p>}
+              {error && <p className="text-red-500">{error}</p>}
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{" "}
-                <a
-                  href="#"
-                  className="text-primary-600 dark:text-primary-500 font-medium hover:underline"
+                <Link
+                  to="/signup"
+                  className="dark:text-primary-500 font-medium text-blue-600 hover:underline"
                 >
                   Sign up
-                </a>
+                </Link>
               </p>
             </form>
           </div>
